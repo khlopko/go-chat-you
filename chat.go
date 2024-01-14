@@ -74,40 +74,39 @@ func Join(user *User, code string) (*ChatRoom, error) {
 		return nil, errors.New("No chat available with provided code")
 	}
 	chats[idx].participants = append(chats[idx].participants, *user)
-    return &chats[idx], nil
+	return &chats[idx], nil
 }
 
 func Leave(room *ChatRoom) error {
-    idx := slices.IndexFunc(chats, func(r ChatRoom) bool { return r.id == room.id })
+	idx := slices.IndexFunc(chats, func(r ChatRoom) bool { return r.id == room.id })
 	if idx == -1 {
 		return errors.New("Chat no longer exists")
 	}
-    slices.Delete(chats, idx, idx+1)
-    return nil
+	slices.Delete(chats, idx, idx+1)
+	return nil
 }
 
 func Send(message string, author *User, room *ChatRoom) (*Message, error) {
-    msg := Message{
-        1,
-        *author,
-        message,
-        time.Time{},
-        []int64{},
-    }
-    messagesByRooms[room.id] = append(messagesByRooms[room.id], msg)
-    return &msg, nil
+	msg := Message{
+		1,
+		*author,
+		message,
+		time.Time{},
+		[]int64{},
+	}
+	messagesByRooms[room.id] = append(messagesByRooms[room.id], msg)
+	return &msg, nil
 }
 
 func Read(msg *Message, user *User, room *ChatRoom) error {
-    msgs := messagesByRooms[room.id]
-    idx := slices.IndexFunc(msgs, func(m Message) bool { return m.id == msg.id })
+	msgs := messagesByRooms[room.id]
+	idx := slices.IndexFunc(msgs, func(m Message) bool { return m.id == msg.id })
 	if idx == -1 {
 		return errors.New("Chat no longer exists")
 	}
-    if slices.Contains(msg.readBy, user.id) {
-        return nil
-    }
-    msg.readBy = append(msg.readBy, user.id)
-    return nil
+	if slices.Contains(msg.readBy, user.id) {
+		return nil
+	}
+	msg.readBy = append(msg.readBy, user.id)
+	return nil
 }
-
